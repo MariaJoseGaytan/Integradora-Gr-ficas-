@@ -7,17 +7,18 @@ public class GoalController : MonoBehaviour
     public GameObject REDCARD;
 
     public float intervalo = 1f;
-    public int tarjetasRojasPorFase = 5;
-    
-    public float rangoDeSpawn = 5f;
-    public float velocidadTarjeta = 10f; // Velocidad de las tarjetas
-    public float tamanoFinal = 0.05f; // Tamaño final de las tarjetas
+    public int tarjetasRojasPorFase = 2; // Número máximo de tarjetas rojas en fase 2
+    public int tarjetasAmarillasPorFase2 = 3; // Número máximo de tarjetas amarillas en fase 2
+
+    public float rangoDeSpawnX = 30f;
+    public float rangoDeSpawnY = 5f;
+    public float tamanoFinal = 0.05f;
 
     private Camera camara;
 
     void Start()
     {
-        camara = Camera.main; // Obtiene la cámara principal
+        camara = Camera.main; 
         StartCoroutine(CicloDeTarjetas());
     }
 
@@ -25,55 +26,63 @@ public class GoalController : MonoBehaviour
     {
         while (true)
         {
-            // Fase 1: 15 segundos de solo tarjetas amarillas
-            float duracionFase1 = 15f;
+            // Fase 1: 10 segundos de solo tarjetas amarillas, velocidad 10
+            float duracionFase1 = 10f;
             float tiempoInicio = Time.time;
-            while (Time.time - tiempoInicio < duracionFase1)
+            int tarjetasLanzadas = 0;
+            while (Time.time - tiempoInicio < duracionFase1 && tarjetasLanzadas < 5)
             {
-                CrearTarjeta(YELLOWCARD);
+                CrearTarjeta(YELLOWCARD, 10f); // Velocidad inicial para fase 1
+                tarjetasLanzadas++;
                 yield return new WaitForSeconds(intervalo);
             }
 
-            // Fase 2: 15 segundos de tarjetas amarillas y 5 rojas
-            float duracionFase2 = 15f;
+            // Fase 2: 10 segundos de tarjetas amarillas y algunas rojas, velocidad 15
+            float duracionFase2 = 10f;
             tiempoInicio = Time.time;
             int rojasLanzadas = 0;
-            while (Time.time - tiempoInicio < duracionFase2)
+            int amarillasLanzadas = 0;
+            while (Time.time - tiempoInicio < duracionFase2 && (amarillasLanzadas < tarjetasAmarillasPorFase2 || rojasLanzadas < tarjetasRojasPorFase))
             {
-                CrearTarjeta(YELLOWCARD);
+                if (amarillasLanzadas < tarjetasAmarillasPorFase2)
+                {
+                    CrearTarjeta(YELLOWCARD, 15f); // Velocidad aumentada para fase 2
+                    amarillasLanzadas++;
+                }
+                
                 if (rojasLanzadas < tarjetasRojasPorFase)
                 {
-                    CrearTarjeta(REDCARD);
+                    CrearTarjeta(REDCARD, 15f); // Tarjetas rojas en fase 2 también con velocidad 15
                     rojasLanzadas++;
                 }
+                
                 yield return new WaitForSeconds(intervalo);
             }
 
-            // Fase 3: 15 segundos de solo tarjetas rojas
-            float duracionFase3 = 15f;
+            // Fase 3: 10 segundos de solo tarjetas rojas, velocidad 20
+            float duracionFase3 = 10f;
             tiempoInicio = Time.time;
-            while (Time.time - tiempoInicio < duracionFase3)
+            tarjetasLanzadas = 0;
+            while (Time.time - tiempoInicio < duracionFase3 && tarjetasLanzadas < 5)
             {
-                CrearTarjeta(REDCARD);
+                CrearTarjeta(REDCARD, 20f); // Velocidad más alta para fase 3
+                tarjetasLanzadas++;
                 yield return new WaitForSeconds(intervalo);
             }
         }
     }
 
-    void CrearTarjeta(GameObject tarjetaPrefab)
-{
-    Vector3 posicionAleatoria = new Vector3(
-        transform.position.x + Random.Range(-rangoDeSpawn, rangoDeSpawn),
-        transform.position.y + Random.Range(-rangoDeSpawn, rangoDeSpawn),
-        transform.position.z);
+    void CrearTarjeta(GameObject tarjetaPrefab, float velocidad)
+    {
+        Vector3 posicionAleatoria = new Vector3(
+            4.3f + Random.Range(-rangoDeSpawnX, rangoDeSpawnX),
+            -16f + Random.Range(-rangoDeSpawnY, rangoDeSpawnY),
+            22f);
 
-    // Instanciar la tarjeta en la posición aleatoria con el tamaño final directamente
-    GameObject tarjeta = Instantiate(tarjetaPrefab, posicionAleatoria, transform.rotation); // Usa la rotación de la portería
-    tarjeta.transform.localScale = new Vector3(tamanoFinal, tamanoFinal, tamanoFinal); // Asignar tamaño final de inmediato
+        GameObject tarjeta = Instantiate(tarjetaPrefab, posicionAleatoria, transform.rotation);
+        tarjeta.transform.localScale = new Vector3(tamanoFinal, tamanoFinal, tamanoFinal);
 
-    // Agregar el script de movimiento sin dirección a la cámara
-    TarjetaMovimiento movimiento = tarjeta.AddComponent<TarjetaMovimiento>();
-    movimiento.velocidad = velocidadTarjeta;
-}
-
+        TarjetaMovimiento movimiento = tarjeta.AddComponent<TarjetaMovimiento>();
+        movimiento.velocidad = velocidad; // Asigna la velocidad específica para cada fase
+    }
 }
