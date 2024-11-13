@@ -3,19 +3,21 @@ using UnityEngine;
 
 public class GoalController : MonoBehaviour
 {
-    // Prefabs de las tarjetas
     public GameObject YELLOWCARD;
     public GameObject REDCARD;
 
-    // Intervalo de tiempo entre lanzamientos
     public float intervalo = 1f;
     public int tarjetasRojasPorFase = 5;
     
-    // Rango de posición aleatoria alrededor de la portería
     public float rangoDeSpawn = 5f;
+    public float velocidadTarjeta = 10f; // Velocidad de las tarjetas
+    public float tamanoFinal = 0.05f; // Tamaño final de las tarjetas
+
+    private Camera camara;
 
     void Start()
     {
+        camara = Camera.main; // Obtiene la cámara principal
         StartCoroutine(CicloDeTarjetas());
     }
 
@@ -59,32 +61,19 @@ public class GoalController : MonoBehaviour
     }
 
     void CrearTarjeta(GameObject tarjetaPrefab)
-    {
-        // Generar posición aleatoria cerca de la portería
-        Vector3 posicionAleatoria = new Vector3(
-            transform.position.x + Random.Range(-rangoDeSpawn, rangoDeSpawn),
-            transform.position.y + Random.Range(-rangoDeSpawn, rangoDeSpawn),
-            transform.position.z);
+{
+    Vector3 posicionAleatoria = new Vector3(
+        transform.position.x + Random.Range(-rangoDeSpawn, rangoDeSpawn),
+        transform.position.y + Random.Range(-rangoDeSpawn, rangoDeSpawn),
+        transform.position.z);
 
-        // Instanciar la tarjeta y hacerla pequeña
-        GameObject tarjeta = Instantiate(tarjetaPrefab, posicionAleatoria, Quaternion.identity);
-        tarjeta.transform.localScale = Vector3.zero; // Empezar desde tamaño 0
-        StartCoroutine(CrecerTarjeta(tarjeta));
-    }
+    // Instanciar la tarjeta en la posición aleatoria con el tamaño final directamente
+    GameObject tarjeta = Instantiate(tarjetaPrefab, posicionAleatoria, transform.rotation); // Usa la rotación de la portería
+    tarjeta.transform.localScale = new Vector3(tamanoFinal, tamanoFinal, tamanoFinal); // Asignar tamaño final de inmediato
 
-    IEnumerator CrecerTarjeta(GameObject tarjeta)
-    {
-        float duracion = 2f; // Duración del crecimiento
-        float tiempoTranscurrido = 0f;
-        Vector3 tamanoFinal = new Vector3(1f, 1f, 1f); // Tamaño final de la tarjeta
+    // Agregar el script de movimiento sin dirección a la cámara
+    TarjetaMovimiento movimiento = tarjeta.AddComponent<TarjetaMovimiento>();
+    movimiento.velocidad = velocidadTarjeta;
+}
 
-        while (tiempoTranscurrido < duracion)
-        {
-            tarjeta.transform.localScale = Vector3.Lerp(Vector3.zero, tamanoFinal, tiempoTranscurrido / duracion);
-            tiempoTranscurrido += Time.deltaTime;
-            yield return null;
-        }
-
-        tarjeta.transform.localScale = tamanoFinal; // Asegurarse de que llegue al tamaño final
-    }
 }
