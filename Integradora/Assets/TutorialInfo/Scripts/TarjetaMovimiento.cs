@@ -3,17 +3,32 @@ using UnityEngine;
 public class TarjetaMovimiento : MonoBehaviour
 {
     public float velocidad = 10f;
-    public float limiteZ = -40f; // Posición en Z donde la tarjeta se destruirá
+    public float limiteZ = -40f;
+
+    private GoalController goalController;
+    private bool esRoja;
+
+    public void AsignarGoalController(GoalController controller)
+    {
+        goalController = controller;
+        esRoja = gameObject.CompareTag("REDCARD");
+    }
 
     void Update()
     {
-        // Mueve la tarjeta en el eje Z hacia los valores negativos
         transform.position += Vector3.back * velocidad * Time.deltaTime;
 
-        // Verifica si la tarjeta ha alcanzado el límite en Z
         if (transform.position.z <= limiteZ)
         {
-            Destroy(gameObject); // Destruye la tarjeta cuando alcanza el límite en Z
+            Destroy(gameObject);
+        }
+    }
+
+    void OnDestroy()
+    {
+        if (goalController != null)
+        {
+            goalController.RegistrarDestruccionTarjeta(esRoja);
         }
     }
 }
