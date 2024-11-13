@@ -3,32 +3,39 @@ using UnityEngine;
 public class TarjetaMovimiento : MonoBehaviour
 {
     public float velocidad = 10f;
-    public float limiteZ = -40f;
+    private float velocidadOriginal;
+    private Vector3 direccion = Vector3.back;
 
+    // Referencia al GoalController
     private GoalController goalController;
-    private bool esRoja;
+
+    void Start()
+    {
+        velocidadOriginal = velocidad;
+    }
 
     public void AsignarGoalController(GoalController controller)
     {
-        goalController = controller;
-        esRoja = gameObject.CompareTag("REDCARD");
+        goalController = controller; // Asignar referencia al GoalController
+    }
+
+    public void VelocidadActualizada(float factor)
+    {
+        velocidad = velocidadOriginal * factor;
     }
 
     void Update()
     {
-        transform.position += Vector3.back * velocidad * Time.deltaTime;
+        transform.position += direccion * velocidad * Time.deltaTime;
 
-        if (transform.position.z <= limiteZ)
+        if (transform.position.z <= -40f) // Ajusta este límite según tu escena
         {
+            if (goalController != null)
+            {
+                // Llama a goalController para registrar la destrucción de la tarjeta
+                goalController.RegistrarDestruccionTarjeta(gameObject.CompareTag("REDCARD"));
+            }
             Destroy(gameObject);
-        }
-    }
-
-    void OnDestroy()
-    {
-        if (goalController != null)
-        {
-            goalController.RegistrarDestruccionTarjeta(esRoja);
         }
     }
 }

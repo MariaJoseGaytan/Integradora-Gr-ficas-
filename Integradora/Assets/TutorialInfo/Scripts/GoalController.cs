@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GoalController : MonoBehaviour
@@ -10,7 +11,7 @@ public class GoalController : MonoBehaviour
     public int tarjetasRojasPorFase = 2;
     public int tarjetasAmarillasPorFase2 = 3;
 
-    public float rangoDeSpawnY = 5f; 
+    public float rangoDeSpawnY = 5f;
     public float tamanoFinal = 0.05f;
 
     private Camera camara;
@@ -18,13 +19,30 @@ public class GoalController : MonoBehaviour
     private int tarjetasRojasEnEscena = 0;
     private int tarjetasAmarillasEnEscena = 0;
 
-   
-    private float minX = -18f; // Poste izquierdo 
-    private float maxX = 23f; // Poste derecho 
+    private float minX = -18f; // Poste izquierdo
+    private float maxX = 23f; // Poste derecho
+
+    // Velocidades normales y lentas
+    private float velocidadLentaFactor = 0.3f; // Factor para ralentizar la velocidad al 30%
+    private List<TarjetaMovimiento> tarjetasEnJuego = new List<TarjetaMovimiento>();
+
     void Start()
     {
         camara = Camera.main;
         StartCoroutine(CicloDeTarjetas());
+    }
+
+    void Update()
+    {
+        // Detectar si se mantiene presionada la tecla espacio para ralentizar las tarjetas
+        if (Input.GetKey(KeyCode.Space))
+        {
+            EstablecerVelocidadTarjetas(velocidadLentaFactor);
+        }
+        else
+        {
+            EstablecerVelocidadTarjetas(1f); // Velocidad normal
+        }
     }
 
     IEnumerator CicloDeTarjetas()
@@ -54,13 +72,13 @@ public class GoalController : MonoBehaviour
                     CrearTarjeta(YELLOWCARD, 15f);
                     amarillasLanzadas++;
                 }
-                
+
                 if (rojasLanzadas < tarjetasRojasPorFase)
                 {
                     CrearTarjeta(REDCARD, 15f);
                     rojasLanzadas++;
                 }
-                
+
                 yield return new WaitForSeconds(intervalo);
             }
 
@@ -79,7 +97,6 @@ public class GoalController : MonoBehaviour
 
     void CrearTarjeta(GameObject tarjetaPrefab, float velocidad)
     {
-        // Genera una posición aleatoria en X entre los límites de los postes y en Y dentro del rango de spawn
         Vector3 posicionAleatoria = new Vector3(
             Random.Range(minX, maxX),  // Rango entre los postes
             -16f + Random.Range(-rangoDeSpawnY, rangoDeSpawnY),  // Rango en Y
@@ -90,7 +107,8 @@ public class GoalController : MonoBehaviour
 
         TarjetaMovimiento movimiento = tarjeta.AddComponent<TarjetaMovimiento>();
         movimiento.velocidad = velocidad;
-        movimiento.AsignarGoalController(this); // Asignar referencia de GoalController
+        movimiento.AsignarGoalController(this); 
+        tarjetasEnJuego.Add(movimiento); // Agregar la tarjeta a la lista para control de velocidad
 
         if (tarjetaPrefab == YELLOWCARD)
         {
@@ -99,6 +117,18 @@ public class GoalController : MonoBehaviour
         else if (tarjetaPrefab == REDCARD)
         {
             tarjetasRojasEnEscena++;
+        }
+    }
+
+    // Método para ajustar la velocidad de todas las tarjetas en juego
+    void EstablecerVelocidadTarjetas(float factorVelocidad)
+    {
+        foreach (TarjetaMovimiento tarjeta in tarjetasEnJuego)
+        {
+            if (tarjeta != null)
+            {
+                tarjeta.VelocidadActualizada(factorVelocidad);
+            }
         }
     }
 
@@ -116,17 +146,13 @@ public class GoalController : MonoBehaviour
 
     void OnGUI()
     {
-        
         Color colorOriginal = GUI.color;
-        GUI.color = Color.black; 
+        GUI.color = Color.black;
 
-       
-        GUI.Box(new Rect(10, 10, 250, 50), ""); 
+        GUI.Box(new Rect(10, 10, 250, 50), "");
 
-        
         GUI.color = colorOriginal;
 
-        
         GUIStyle estiloTextoAmarillo = new GUIStyle();
         estiloTextoAmarillo.fontSize = 16;
         estiloTextoAmarillo.normal.textColor = Color.yellow;
@@ -135,7 +161,6 @@ public class GoalController : MonoBehaviour
         estiloTextoRojo.fontSize = 16;
         estiloTextoRojo.normal.textColor = Color.red;
 
-        
         GUI.Label(new Rect(15, 15, 220, 20), "Tarjetas Amarillas en juego: " + tarjetasAmarillasEnEscena, estiloTextoAmarillo);
         GUI.Label(new Rect(15, 35, 220, 20), "Tarjetas Rojas en juego: " + tarjetasRojasEnEscena, estiloTextoRojo);
     }
