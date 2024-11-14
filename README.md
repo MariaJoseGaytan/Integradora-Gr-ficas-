@@ -19,7 +19,8 @@ En "Fútbol en el Caos", cada movimiento de Lionela es importante. Debe equilibr
 
 ## Objetivo del Juego
 
-### Ganar: Anotar 5 goles antes de que se acumulen 5 obstáculos, recibas 2 tarjetas amarillas o 1 tarjeta roja, o te quedes sin balones.
+### Ganar: 
+Anotar 5 goles antes de que se acumulen 5 obstáculos, recibas 2 tarjetas amarillas o 1 tarjeta roja, o te quedes sin balones.
 
 ### Perder:
 Si recibes 5 obstáculos.
