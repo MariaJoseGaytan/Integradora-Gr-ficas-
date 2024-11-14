@@ -12,15 +12,16 @@ public class JugadorMovimiento : MonoBehaviour
     private bool juegoTerminado = false; 
 
     public AudioClip sonidoPerdida;
+    public AudioClip sonidoVictoria;
     private AudioSource audioSource; 
     public AudioSource audioFondo; 
 
-    private int tarjetasAmarillas = 0; // Contador de tarjetas amarillas recibidas
+    private int tarjetasAmarillas = 0; 
+    private bool esVictoria = false;
 
     void Start()
     {
         audioSource = gameObject.AddComponent<AudioSource>();
-        audioSource.clip = sonidoPerdida;
 
         if (audioFondo != null)
         {
@@ -44,7 +45,7 @@ public class JugadorMovimiento : MonoBehaviour
 
             if (balonesRestantes <= 0)
             {
-                TerminarJuego();
+                TerminarJuego(false);
             }
         }
     }
@@ -68,17 +69,18 @@ public class JugadorMovimiento : MonoBehaviour
         tarjetasAmarillas++;
         if (tarjetasAmarillas >= 2)
         {
-            TerminarJuego();
+            TerminarJuego(false);
         }
     }
 
     public void RecibirTarjetaRoja()
     {
-        TerminarJuego();
+        TerminarJuego(false);
     }
 
-    public void TerminarJuego()
+    public void TerminarJuego(bool esVictoria)
     {
+        this.esVictoria = esVictoria;
         juegoTerminado = true;
 
         GameObject goalControllerObject = GameObject.FindWithTag("GoalController");
@@ -96,9 +98,19 @@ public class JugadorMovimiento : MonoBehaviour
             audioFondo.Stop();
         }
 
-        if (sonidoPerdida != null)
+        if (esVictoria)
         {
-            audioSource.Play();
+            if (sonidoVictoria != null)
+            {
+                audioSource.PlayOneShot(sonidoVictoria);
+            }
+        }
+        else
+        {
+            if (sonidoPerdida != null)
+            {
+                audioSource.PlayOneShot(sonidoPerdida);
+            }
         }
     }
 
@@ -115,12 +127,13 @@ public class JugadorMovimiento : MonoBehaviour
 
         if (juegoTerminado)
         {
-            GUIStyle estiloPerdiste = new GUIStyle();
-            estiloPerdiste.fontSize = 40;
-            estiloPerdiste.normal.textColor = Color.red;
-            estiloPerdiste.alignment = TextAnchor.MiddleCenter;
+            GUIStyle estiloFinal = new GUIStyle();
+            estiloFinal.fontSize = 40;
+            estiloFinal.alignment = TextAnchor.MiddleCenter;
 
-            GUI.Label(new Rect(Screen.width / 2 - 100, Screen.height / 2 - 25, 200, 50), "GAME OVER", estiloPerdiste);
+            estiloFinal.normal.textColor = esVictoria ? Color.green : Color.red;
+
+            GUI.Label(new Rect(Screen.width / 2 - 100, Screen.height / 2 - 25, 200, 50), esVictoria ? "WIN" : "GAME OVER", estiloFinal);
         }
     }
 }

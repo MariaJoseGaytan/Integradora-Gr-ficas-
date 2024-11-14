@@ -478,7 +478,8 @@ MonoBehaviour:
   limiteDerecho: 11
   prefabBalon: {fileID: 1600749095}
   fuerzaLanzamiento: 15
-  sonidoPerdida: {fileID: 8300000, guid: 36eb5fe7fc0e24c61982493d2a41d528, type: 3}
+  sonidoPerdida: {fileID: 8300000, guid: aeea00902da444fe3bce126e8d1dfd16, type: 3}
+  sonidoVictoria: {fileID: 8300000, guid: 7bcc68cfe3c7d411699853320a84caa5, type: 3}
   audioFondo: {fileID: 2140879241}
 --- !u!65 &470319199
 BoxCollider:
@@ -621,6 +622,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13b830aa79aa1408c96a8b3a85586a3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!135 &1600749100
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1600749095}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1707150355 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1291161702805429687, guid: 8281968fd16424c65bb3e4d3af6bbb42, type: 3}
@@ -1069,6 +1091,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: soccer_ball
       objectReference: {fileID: 0}
+    - target: {fileID: 7649008704173033517, guid: 3e09dd7beea034544b70bcbadce90f16, type: 3}
+      propertyPath: m_TagString
+      value: Balon
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1079,6 +1105,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7649008704173033517, guid: 3e09dd7beea034544b70bcbadce90f16, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1600749098}
+    - targetCorrespondingSourceObject: {fileID: 7649008704173033517, guid: 3e09dd7beea034544b70bcbadce90f16, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1600749100}
   m_SourcePrefab: {fileID: 100100000, guid: 3e09dd7beea034544b70bcbadce90f16, type: 3}
 --- !u!1001 &7753718385601757182
 PrefabInstance:
