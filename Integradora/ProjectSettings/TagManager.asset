@@ -8,6 +8,7 @@ TagManager:
   - GoalController
   - YELLOWCARD
   - Balon
+  - Obstaculo
   layers:
   - Default
   - TransparentFX

@@ -22,6 +22,8 @@ public class GoalController : MonoBehaviour
     private int tarjetasAmarillasEnEscena = 0;
     private int tarjetasAmarillasRecibidas = 0;
     private int tarjetasRojasRecibidas = 0;
+    private int obstaculosGolpeados = 0; // Contador de obstáculos golpeados
+    private const int limiteObstaculosGolpeados = 5; // Límite de obstáculos golpeados antes de perder
     public bool juegoTerminado = false;
 
     private int goles = 0;
@@ -170,6 +172,18 @@ public class GoalController : MonoBehaviour
         }
     }
 
+    public void RegistrarColisionConObstaculo()
+    {
+        if (!juegoTerminado && !esVictoria)
+        {
+            obstaculosGolpeados++;
+            if (obstaculosGolpeados >= limiteObstaculosGolpeados)
+            {
+                TerminarJuego("Has golpeado demasiados obstáculos. ¡Juego terminado!");
+            }
+        }
+    }
+
     public void RegistrarDestruccionTarjeta(bool esRoja, TarjetaMovimiento tarjeta)
     {
         if (esRoja)
@@ -215,13 +229,18 @@ public class GoalController : MonoBehaviour
         estiloTextoRojo.fontSize = 16;
         estiloTextoRojo.normal.textColor = Color.red;
 
+        GUIStyle estiloTextoBlanco = new GUIStyle(); 
+        estiloTextoBlanco.fontSize = 16;
+        estiloTextoBlanco.normal.textColor = Color.white;
+
         GUI.Label(new Rect(15, 15, 220, 20), "Tarjetas Amarillas en juego: " + tarjetasAmarillasEnEscena, estiloTextoAmarillo);
         GUI.Label(new Rect(15, 35, 220, 20), "Tarjetas Rojas en juego: " + tarjetasRojasEnEscena, estiloTextoRojo);
 
-        GUI.Box(new Rect(Screen.width - 200, Screen.height - 70, 190, 60), "");
+        GUI.Box(new Rect(Screen.width - 200, Screen.height - 70, 190, 80), "");
 
         GUI.Label(new Rect(Screen.width - 190, Screen.height - 65, 180, 20), "Tarjetas Amarillas: " + tarjetasAmarillasRecibidas, estiloTextoAmarillo);
         GUI.Label(new Rect(Screen.width - 190, Screen.height - 45, 180, 20), "Tarjetas Rojas: " + tarjetasRojasRecibidas, estiloTextoRojo);
+        GUI.Label(new Rect(Screen.width - 190, Screen.height - 25, 180, 20), "Obstáculos golpeados: " + obstaculosGolpeados, estiloTextoBlanco);
 
         GUI.Box(new Rect(Screen.width - 200, 10, 190, 40), "");
         GUI.Label(new Rect(Screen.width - 190, 15, 180, 20), "Goles: " + goles, estiloTextoAmarillo);

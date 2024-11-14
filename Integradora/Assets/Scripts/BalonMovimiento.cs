@@ -7,7 +7,6 @@ public class BalonMovimiento : MonoBehaviour
 
     void Start()
     {
-        // Encuentra el GoalController mediante la etiqueta "GoalController"
         GameObject goalControllerObject = GameObject.FindWithTag("GoalController");
         if (goalControllerObject != null)
         {
@@ -30,8 +29,21 @@ public class BalonMovimiento : MonoBehaviour
             {
                 goalController.RegistrarGol();
             }
-
             Destroy(gameObject); // Destruye el balón al alcanzar la portería
+        }
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        // Verifica si colisiona con un obstáculo
+        if (other.CompareTag("Obstaculo"))
+        {
+            if (goalController != null)
+            {
+                goalController.RegistrarColisionConObstaculo();
+            }
+            Destroy(other.gameObject); // Destruye el obstáculo
+            Destroy(gameObject);       // Destruye el balón
         }
     }
 }
