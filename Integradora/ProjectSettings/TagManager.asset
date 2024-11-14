@@ -6,6 +6,7 @@ TagManager:
   tags:
   - REDCARD
   - GoalController
+  - YELLOWCARD
   layers:
   - Default
   - TransparentFX

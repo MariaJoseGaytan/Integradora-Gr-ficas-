@@ -20,13 +20,14 @@ public class GoalController : MonoBehaviour
     private Camera camara;
     private int tarjetasRojasEnEscena = 0;
     private int tarjetasAmarillasEnEscena = 0;
+    private int tarjetasAmarillasRecibidas = 0; // Contador de tarjetas amarillas recibidas
     public bool juegoTerminado = false; // Variable para detener el ciclo
 
     private float minX = -18f; // Poste izquierdo 
     private float maxX = 23f; // Poste derecho 
 
     // Lista para almacenar las tarjetas activas
-    private List<TarjetaMovimiento> tarjetasEnEscena = new List<TarjetaMovimiento>(); 
+    private List<TarjetaMovimiento> tarjetasEnEscena = new List<TarjetaMovimiento>();
 
     void Start()
     {
@@ -36,14 +37,17 @@ public class GoalController : MonoBehaviour
 
     void Update()
     {
-        // Monitorear la tecla Espacio para ajustar la velocidad de las tarjetas
-        if (Input.GetKey(KeyCode.Space))
+        if (!juegoTerminado)
         {
-            CambiarVelocidadTarjetas(0.5f); // Reduce la velocidad al 50%
-        }
-        else
-        {
-            CambiarVelocidadTarjetas(1.0f); // Restaura la velocidad normal
+            // Monitorear la tecla Espacio para ajustar la velocidad de las tarjetas
+            if (Input.GetKey(KeyCode.Space))
+            {
+                CambiarVelocidadTarjetas(0.5f); // Reduce la velocidad al 50%
+            }
+            else
+            {
+                CambiarVelocidadTarjetas(1.0f); // Restaura la velocidad normal
+            }
         }
     }
 
@@ -130,6 +134,22 @@ public class GoalController : MonoBehaviour
         }
     }
 
+    public void RegistrarImpactoTarjeta(bool esRoja)
+    {
+        if (esRoja)
+        {
+            TerminarJuego("Recibiste una tarjeta roja. ¡Juego terminado!");
+        }
+        else
+        {
+            tarjetasAmarillasRecibidas++;
+            if (tarjetasAmarillasRecibidas >= 2)
+            {
+                TerminarJuego("Recibiste dos tarjetas amarillas. ¡Juego terminado!");
+            }
+        }
+    }
+
     public void RegistrarDestruccionTarjeta(bool esRoja, TarjetaMovimiento tarjeta)
     {
         if (esRoja)
@@ -141,6 +161,24 @@ public class GoalController : MonoBehaviour
             tarjetasAmarillasEnEscena--;
         }
         tarjetasEnEscena.Remove(tarjeta); // Eliminar la tarjeta de la lista al destruirse
+    }
+
+    void TerminarJuego(string mensaje)
+    {
+        juegoTerminado = true;
+
+        Debug.Log(mensaje);
+
+        // Llama al método de `JugadorMovimiento` para manejar la música y el mensaje de "GAME OVER"
+        GameObject jugador = GameObject.FindWithTag("Player");
+        if (jugador != null)
+        {
+            JugadorMovimiento jugadorMovimiento = jugador.GetComponent<JugadorMovimiento>();
+            if (jugadorMovimiento != null)
+            {
+                jugadorMovimiento.TerminarJuego();
+            }
+        }
     }
 
     void OnGUI()
