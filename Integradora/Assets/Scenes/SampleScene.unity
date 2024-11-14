@@ -673,6 +673,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13b830aa79aa1408c96a8b3a85586a3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sonidoColision: {fileID: 8300000, guid: 36eb5fe7fc0e24c61982493d2a41d528, type: 3}
 --- !u!135 &1600749100
 SphereCollider:
   m_ObjectHideFlags: 0
