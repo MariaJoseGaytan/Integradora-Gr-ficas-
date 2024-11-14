@@ -6,8 +6,20 @@ public class ObstaculosController : MonoBehaviour
     public GameObject prefabObstaculo; // Prefab del obstáculo
     public float intervaloSpawn = 2f;  // Intervalo entre generación de obstáculos
 
+    private GoalController goalController; // Referencia al GoalController
+
     void Start()
     {
+        GameObject goalControllerObject = GameObject.FindWithTag("GoalController");
+        if (goalControllerObject != null)
+        {
+            goalController = goalControllerObject.GetComponent<GoalController>();
+        }
+        else
+        {
+            Debug.LogWarning("GoalController no encontrado en la escena.");
+        }
+
         if (prefabObstaculo != null)
         {
             StartCoroutine(GenerarObstaculos());
@@ -22,6 +34,12 @@ public class ObstaculosController : MonoBehaviour
     {
         while (true)
         {
+            // Verificar si el juego ha terminado para detener la generación de obstáculos
+            if (goalController != null && goalController.juegoTerminado)
+            {
+                yield break; // Detener la generación de obstáculos si el juego ha terminado
+            }
+
             // Verifica que el prefab esté asignado antes de instanciar
             if (prefabObstaculo != null)
             {
@@ -33,6 +51,7 @@ public class ObstaculosController : MonoBehaviour
                 Debug.LogWarning("Prefab del obstáculo es nulo.");
                 break;
             }
+
             yield return new WaitForSeconds(intervaloSpawn);
         }
     }
