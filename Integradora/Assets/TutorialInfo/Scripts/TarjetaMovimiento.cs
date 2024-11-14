@@ -28,12 +28,12 @@ public class TarjetaMovimiento : MonoBehaviour
     {
         transform.position += direccion * velocidad * Time.deltaTime;
 
-        if (transform.position.z <= -40f) // Ajusta este límite según tu escena
+        if (transform.position.z <= -40f) 
         {
             if (goalController != null)
             {
                 // Llama a goalController para registrar la destrucción de la tarjeta
-                goalController.RegistrarDestruccionTarjeta(gameObject.CompareTag("REDCARD"));
+                goalController.RegistrarDestruccionTarjeta(gameObject.CompareTag("REDCARD"), this);
             }
             Destroy(gameObject);
         }

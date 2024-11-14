@@ -11,20 +11,17 @@ public class GoalController : MonoBehaviour
     public int tarjetasRojasPorFase = 2;
     public int tarjetasAmarillasPorFase2 = 3;
 
-    public float rangoDeSpawnY = 5f;
+    public float rangoDeSpawnY = 5f; 
     public float tamanoFinal = 0.05f;
 
     private Camera camara;
-
     private int tarjetasRojasEnEscena = 0;
     private int tarjetasAmarillasEnEscena = 0;
 
-    private float minX = -18f; // Poste izquierdo
-    private float maxX = 23f; // Poste derecho
-
-    // Velocidades normales y lentas
-    private float velocidadLentaFactor = 0.3f; // Factor para ralentizar la velocidad al 30%
-    private List<TarjetaMovimiento> tarjetasEnJuego = new List<TarjetaMovimiento>();
+    public bool juegoTerminado = false; // Nueva variable para detener el ciclo
+    private float minX = -18f; // Poste izquierdo 
+    private float maxX = 23f; // Poste derecho 
+    private List<TarjetaMovimiento> tarjetasEnEscena = new List<TarjetaMovimiento>(); // Lista de tarjetas activas
 
     void Start()
     {
@@ -34,59 +31,56 @@ public class GoalController : MonoBehaviour
 
     void Update()
     {
-        // Detectar si se mantiene presionada la tecla espacio para ralentizar las tarjetas
+        // Monitorear la tecla Espacio para ajustar la velocidad de las tarjetas
         if (Input.GetKey(KeyCode.Space))
         {
-            EstablecerVelocidadTarjetas(velocidadLentaFactor);
+            CambiarVelocidadTarjetas(0.5f); // Reduce la velocidad al 50%
         }
         else
         {
-            EstablecerVelocidadTarjetas(1f); // Velocidad normal
+            CambiarVelocidadTarjetas(1.0f); // Restaura la velocidad normal
         }
     }
 
     IEnumerator CicloDeTarjetas()
     {
-        while (true)
+        while (!juegoTerminado) // Ciclo solo continúa si el juego no ha terminado
         {
-            // Fase 1: solo tarjetas amarillas, velocidad 10
             float duracionFase1 = 10f;
             float tiempoInicio = Time.time;
             int tarjetasLanzadas = 0;
-            while (Time.time - tiempoInicio < duracionFase1 && tarjetasLanzadas < 5)
+            while (Time.time - tiempoInicio < duracionFase1 && tarjetasLanzadas < 5 && !juegoTerminado)
             {
                 CrearTarjeta(YELLOWCARD, 10f);
                 tarjetasLanzadas++;
                 yield return new WaitForSeconds(intervalo);
             }
 
-            // Fase 2: tarjetas amarillas y rojas, velocidad 15
             float duracionFase2 = 10f;
             tiempoInicio = Time.time;
             int rojasLanzadas = 0;
             int amarillasLanzadas = 0;
-            while (Time.time - tiempoInicio < duracionFase2 && (amarillasLanzadas < tarjetasAmarillasPorFase2 || rojasLanzadas < tarjetasRojasPorFase))
+            while (Time.time - tiempoInicio < duracionFase2 && (amarillasLanzadas < tarjetasAmarillasPorFase2 || rojasLanzadas < tarjetasRojasPorFase) && !juegoTerminado)
             {
                 if (amarillasLanzadas < tarjetasAmarillasPorFase2)
                 {
                     CrearTarjeta(YELLOWCARD, 15f);
                     amarillasLanzadas++;
                 }
-
+                
                 if (rojasLanzadas < tarjetasRojasPorFase)
                 {
                     CrearTarjeta(REDCARD, 15f);
                     rojasLanzadas++;
                 }
-
+                
                 yield return new WaitForSeconds(intervalo);
             }
 
-            // Fase 3: solo tarjetas rojas, velocidad 20
             float duracionFase3 = 10f;
             tiempoInicio = Time.time;
             tarjetasLanzadas = 0;
-            while (Time.time - tiempoInicio < duracionFase3 && tarjetasLanzadas < 5)
+            while (Time.time - tiempoInicio < duracionFase3 && tarjetasLanzadas < 5 && !juegoTerminado)
             {
                 CrearTarjeta(REDCARD, 20f);
                 tarjetasLanzadas++;
@@ -98,17 +92,17 @@ public class GoalController : MonoBehaviour
     void CrearTarjeta(GameObject tarjetaPrefab, float velocidad)
     {
         Vector3 posicionAleatoria = new Vector3(
-            Random.Range(minX, maxX),  // Rango entre los postes
-            -16f + Random.Range(-rangoDeSpawnY, rangoDeSpawnY),  // Rango en Y
-            22f); // Posición fija en Z
+            Random.Range(minX, maxX),  // Rango entre los postes en el eje X
+            -9.40f,                    // Fijar la posición Y en -9.40
+            22f);                      // Posición fija en Z
 
         GameObject tarjeta = Instantiate(tarjetaPrefab, posicionAleatoria, transform.rotation);
         tarjeta.transform.localScale = new Vector3(tamanoFinal, tamanoFinal, tamanoFinal);
 
         TarjetaMovimiento movimiento = tarjeta.AddComponent<TarjetaMovimiento>();
         movimiento.velocidad = velocidad;
-        movimiento.AsignarGoalController(this); 
-        tarjetasEnJuego.Add(movimiento); // Agregar la tarjeta a la lista para control de velocidad
+        movimiento.AsignarGoalController(this); // Asignar referencia de GoalController
+        tarjetasEnEscena.Add(movimiento); // Agregar tarjeta a la lista
 
         if (tarjetaPrefab == YELLOWCARD)
         {
@@ -120,19 +114,18 @@ public class GoalController : MonoBehaviour
         }
     }
 
-    // Método para ajustar la velocidad de todas las tarjetas en juego
-    void EstablecerVelocidadTarjetas(float factorVelocidad)
+    void CambiarVelocidadTarjetas(float factor)
     {
-        foreach (TarjetaMovimiento tarjeta in tarjetasEnJuego)
+        foreach (TarjetaMovimiento tarjeta in tarjetasEnEscena)
         {
-            if (tarjeta != null)
+            if (tarjeta != null) // Verifica que la tarjeta siga existiendo
             {
-                tarjeta.VelocidadActualizada(factorVelocidad);
+                tarjeta.VelocidadActualizada(factor);
             }
         }
     }
 
-    public void RegistrarDestruccionTarjeta(bool esRoja)
+    public void RegistrarDestruccionTarjeta(bool esRoja, TarjetaMovimiento tarjeta)
     {
         if (esRoja)
         {
@@ -142,6 +135,7 @@ public class GoalController : MonoBehaviour
         {
             tarjetasAmarillasEnEscena--;
         }
+        tarjetasEnEscena.Remove(tarjeta); // Remover la tarjeta de la lista al destruirse
     }
 
     void OnGUI()
