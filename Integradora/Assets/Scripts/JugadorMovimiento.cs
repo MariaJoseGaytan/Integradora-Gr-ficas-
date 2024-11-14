@@ -8,7 +8,7 @@ public class JugadorMovimiento : MonoBehaviour
     public GameObject prefabBalon;
     public float fuerzaLanzamiento = 15f;
 
-    private int balonesRestantes = 50; 
+    private int balonesRestantes = 10; 
     private bool juegoTerminado = false; 
 
     public AudioClip sonidoPerdida;
@@ -112,6 +112,11 @@ public class JugadorMovimiento : MonoBehaviour
                 audioSource.PlayOneShot(sonidoPerdida);
             }
         }
+    }
+    public void AgregarBalones(int cantidad)
+    {
+        balonesRestantes += cantidad;
+        Debug.Log("Balones restantes: " + balonesRestantes);
     }
 
     void OnGUI()

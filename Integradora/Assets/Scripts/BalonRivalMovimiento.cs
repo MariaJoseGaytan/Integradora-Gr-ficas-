@@ -5,11 +5,18 @@ public class BalonRivalMovimiento : MonoBehaviour
     public float velocidad = 10f;
     private Vector3 direccion = Vector3.back;
     private GoalController goalController;
+    private JugadorMovimiento jugadorMovimiento; 
 
     void Start()
     {
         // Configura la dirección inicial
         direccion = Vector3.back;
+
+        GameObject jugador = GameObject.FindWithTag("Player");
+        if (jugador != null)
+        {
+            jugadorMovimiento = jugador.GetComponent<JugadorMovimiento>();
+        }
     }
 
     public void AsignarGoalController(GoalController controller)
@@ -30,24 +37,29 @@ public class BalonRivalMovimiento : MonoBehaviour
     }
 
     private void OnTriggerEnter(Collider other)
-{
-    if (other.CompareTag("Balon"))
     {
-        // Si el balón del jugador colisiona con el balón rival
-        Destroy(other.gameObject); // Destruye el balón del jugador
-        Destroy(gameObject);       // Destruye el balón rival
-    }
-    else if (other.CompareTag("Player"))
-    {
-        // Si el balón rival colisiona con el jugador
-        if (goalController != null)
+        if (other.CompareTag("Balon"))
         {
-            goalController.RegistrarColisionConObstaculo(); 
+            // Si el balón del jugador colisiona con el balón rival
+            Destroy(other.gameObject); // Destruye el balón del jugador
+            Destroy(gameObject);       // Destruye el balón rival
+
+            // Añadir 2 balones al jugador
+            if (jugadorMovimiento != null)
+            {
+                jugadorMovimiento.AgregarBalones(2); // Incrementa en 2 los balones
+            }
         }
+        else if (other.CompareTag("Player"))
+        {
+            // Si el balón rival colisiona con el jugador
+            if (goalController != null)
+            {
+                goalController.RegistrarColisionConObstaculo(); 
+            }
 
-        // Destruye el balón rival tras la colisión
-        Destroy(gameObject);
+            // Destruye el balón rival tras la colisión
+            Destroy(gameObject);
+        }
     }
-}
-
 }
