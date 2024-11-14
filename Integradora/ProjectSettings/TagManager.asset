@@ -9,6 +9,7 @@ TagManager:
   - YELLOWCARD
   - Balon
   - Obstaculo
+  - ObstaculosController
   layers:
   - Default
   - TransparentFX

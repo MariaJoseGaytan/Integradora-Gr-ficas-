@@ -22,8 +22,8 @@ public class GoalController : MonoBehaviour
     private int tarjetasAmarillasEnEscena = 0;
     private int tarjetasAmarillasRecibidas = 0;
     private int tarjetasRojasRecibidas = 0;
-    private int obstaculosGolpeados = 0; // Contador de obstáculos golpeados
-    private const int limiteObstaculosGolpeados = 5; // Límite de obstáculos golpeados antes de perder
+    private int obstaculosGolpeados = 0; 
+    private const int limiteObstaculosGolpeados = 5; 
     public bool juegoTerminado = false;
 
     private int goles = 0;
@@ -198,20 +198,38 @@ public class GoalController : MonoBehaviour
     }
 
     void TerminarJuego(string mensaje)
-    {
-        juegoTerminado = true;
-        Debug.Log(mensaje);
+{
+    juegoTerminado = true;
+    Debug.Log(mensaje);
 
-        GameObject jugador = GameObject.FindWithTag("Player");
-        if (jugador != null)
+    GameObject jugador = GameObject.FindWithTag("Player");
+    if (jugador != null)
+    {
+        JugadorMovimiento jugadorMovimiento = jugador.GetComponent<JugadorMovimiento>();
+        if (jugadorMovimiento != null)
         {
-            JugadorMovimiento jugadorMovimiento = jugador.GetComponent<JugadorMovimiento>();
-            if (jugadorMovimiento != null)
-            {
-                jugadorMovimiento.TerminarJuego(esVictoria);
-            }
+            jugadorMovimiento.TerminarJuego(esVictoria);
         }
     }
+
+    // Llamada para detener la generación de obstáculos y monedas
+    GameObject obstaculosControllerObject = GameObject.FindWithTag("ObstaculosController");
+    if (obstaculosControllerObject != null)
+    {
+        ObstaculosController obstaculosController = obstaculosControllerObject.GetComponent<ObstaculosController>();
+        if (obstaculosController != null)
+        {
+            obstaculosController.TerminarJuego();
+        }
+    }
+}
+
+    public void ResetearContadoresDeTarjetas()
+    {
+        tarjetasAmarillasRecibidas = 0;
+        tarjetasRojasRecibidas = 0;
+    }
+
 
     void OnGUI()
     {

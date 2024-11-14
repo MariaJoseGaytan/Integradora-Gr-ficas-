@@ -9,6 +9,7 @@ public class ObstaculosController : MonoBehaviour
     public float intervaloSpawnMoneda = 30f;     // Intervalo para generar una moneda
 
     private bool monedaActiva = false;       // Controla si una moneda está activa
+    private bool juegoTerminado = false;     // Controla si el juego ha terminado
 
     void Start()
     {
@@ -31,9 +32,14 @@ public class ObstaculosController : MonoBehaviour
         }
     }
 
+    public void TerminarJuego()
+    {
+        juegoTerminado = true; // Detiene la generación de obstáculos y monedas
+    }
+
     IEnumerator GenerarObstaculos()
     {
-        while (true)
+        while (!juegoTerminado) // Solo genera obstáculos si el juego no ha terminado
         {
             if (prefabObstaculo != null)
             {
@@ -51,9 +57,8 @@ public class ObstaculosController : MonoBehaviour
 
     IEnumerator GenerarMoneda()
     {
-        while (true)
+        while (!juegoTerminado) // Solo genera monedas si el juego no ha terminado
         {
-            // Espera el intervalo establecido para la moneda
             yield return new WaitForSeconds(intervaloSpawnMoneda);
 
             if (prefabMoneda != null && !monedaActiva)
@@ -67,9 +72,28 @@ public class ObstaculosController : MonoBehaviour
                 GameObject nuevaMoneda = Instantiate(prefabMoneda, posicionMoneda, Quaternion.identity);
                 monedaActiva = true;
 
-                // Desactiva monedaActiva al destruir la moneda
-                nuevaMoneda.GetComponent<MonedaController>().OnMonedaRecogida += () => monedaActiva = false;
+                // Desactiva monedaActiva cuando la moneda se recoja
+                MonedaController monedaController = nuevaMoneda.GetComponent<MonedaController>();
+                if (monedaController != null)
+                {
+                    monedaController.OnMonedaRecogida += () => monedaActiva = false;
+                }
+
+                // Desactiva monedaActiva automáticamente después de 30 segundos, si la moneda sigue activa
+                StartCoroutine(ResetMonedaActiva(30f, nuevaMoneda));
             }
         }
+    }
+
+    IEnumerator ResetMonedaActiva(float tiempoEspera, GameObject moneda)
+    {
+        yield return new WaitForSeconds(tiempoEspera);
+        
+        if (moneda != null) // Si la moneda aún existe
+        {
+            Destroy(moneda); // Destruye la moneda si no ha sido recogida
+        }
+
+        monedaActiva = false; // Permite que otra moneda sea generada
     }
 }

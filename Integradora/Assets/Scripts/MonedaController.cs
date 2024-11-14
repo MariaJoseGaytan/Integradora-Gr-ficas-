@@ -5,22 +5,31 @@ public class MonedaController : MonoBehaviour
     public delegate void MonedaRecogida();
     public event MonedaRecogida OnMonedaRecogida;
 
-    public float velocidad = 2f; // Velocidad de movimiento en el eje X
+    public float velocidad = 8f;
     private float limiteDerecho = 23f;
+    private GoalController goalController; // Almacenamiento de GoalController
 
     void Start()
     {
-        // Posiciona la moneda en el punto de inicio en X, con Y y Z fijos
+        // Busca el GoalController usando el Tag "GoalController"
+        GameObject goalControllerObject = GameObject.FindWithTag("GoalController");
+        if (goalControllerObject != null)
+        {
+            goalController = goalControllerObject.GetComponent<GoalController>();
+        }
+        else
+        {
+            Debug.LogWarning("GoalController no encontrado. Asegúrate de que el Tag esté configurado correctamente.");
+        }
+        
         transform.position = new Vector3(-18f, -12.95f, 20f);
     }
 
     void Update()
     {
-        // Mueve la moneda en el eje X hacia la derecha
         float movimientoX = velocidad * Time.deltaTime;
         transform.Translate(movimientoX, 0, 0);
 
-        // Destruye la moneda si llega al límite derecho en X
         if (transform.position.x >= limiteDerecho)
         {
             Destroy(gameObject);
@@ -29,15 +38,20 @@ public class MonedaController : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player")) // Si el jugador recoge la moneda
+        if (other.CompareTag("Player"))
         {
-            OnMonedaRecogida?.Invoke(); // Notifica que la moneda ha sido recogida
-            Destroy(gameObject);        // Destruye la moneda
+            OnMonedaRecogida?.Invoke();
+            Destroy(gameObject);
         }
-        else if (other.CompareTag("Balon")) // Si un balón colisiona con la moneda
+        else if (other.CompareTag("Balon"))
         {
-            Destroy(other.gameObject); // Destruye el balón
-            Destroy(gameObject);       // Destruye la moneda
+            if (goalController != null)
+            {
+                goalController.ResetearContadoresDeTarjetas();
+            }
+
+            Destroy(other.gameObject);
+            Destroy(gameObject);
         }
     }
 }
