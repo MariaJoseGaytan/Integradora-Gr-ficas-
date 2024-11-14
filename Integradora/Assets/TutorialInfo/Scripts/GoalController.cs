@@ -21,6 +21,7 @@ public class GoalController : MonoBehaviour
     private int tarjetasRojasEnEscena = 0;
     private int tarjetasAmarillasEnEscena = 0;
     private int tarjetasAmarillasRecibidas = 0; // Contador de tarjetas amarillas recibidas
+    private int tarjetasRojasRecibidas = 0; // Contador de tarjetas rojas recibidas
     public bool juegoTerminado = false; // Variable para detener el ciclo
 
     private float minX = -18f; // Poste izquierdo 
@@ -138,6 +139,7 @@ public class GoalController : MonoBehaviour
     {
         if (esRoja)
         {
+            tarjetasRojasRecibidas++;
             TerminarJuego("Recibiste una tarjeta roja. ¡Juego terminado!");
         }
         else
@@ -186,8 +188,8 @@ public class GoalController : MonoBehaviour
         Color colorOriginal = GUI.color;
         GUI.color = Color.black;
 
+        // Mostrar la cantidad de tarjetas en juego
         GUI.Box(new Rect(10, 10, 250, 50), "");
-
         GUI.color = colorOriginal;
 
         GUIStyle estiloTextoAmarillo = new GUIStyle();
@@ -200,5 +202,13 @@ public class GoalController : MonoBehaviour
 
         GUI.Label(new Rect(15, 15, 220, 20), "Tarjetas Amarillas en juego: " + tarjetasAmarillasEnEscena, estiloTextoAmarillo);
         GUI.Label(new Rect(15, 35, 220, 20), "Tarjetas Rojas en juego: " + tarjetasRojasEnEscena, estiloTextoRojo);
+
+        // Mostrar el conteo de tarjetas recibidas en la esquina inferior derecha
+        GUI.Box(new Rect(Screen.width - 200, Screen.height - 70, 190, 60), ""); // Fondo negro con tamaño aumentado
+
+        // Ajustar las posiciones de los textos dentro de la caja
+        GUI.Label(new Rect(Screen.width - 190, Screen.height - 65, 180, 20), "Tarjetas Amarillas: " + tarjetasAmarillasRecibidas, estiloTextoAmarillo);
+        GUI.Label(new Rect(Screen.width - 190, Screen.height - 45, 180, 20), "Tarjetas Rojas: " + tarjetasRojasRecibidas, estiloTextoRojo);
+
     }
 }

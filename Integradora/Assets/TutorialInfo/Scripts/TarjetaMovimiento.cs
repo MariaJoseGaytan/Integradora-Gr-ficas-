@@ -5,7 +5,6 @@ public class TarjetaMovimiento : MonoBehaviour
     public float velocidad = 10f;
     private float velocidadOriginal;
     private Vector3 direccion = Vector3.back;
-
     private GoalController goalController;
 
     void Start()
@@ -27,7 +26,7 @@ public class TarjetaMovimiento : MonoBehaviour
     {
         transform.position += direccion * velocidad * Time.deltaTime;
 
-        if (transform.position.z <= -40f)
+        if (transform.position.z <= -40f) 
         {
             if (goalController != null)
             {
@@ -37,23 +36,32 @@ public class TarjetaMovimiento : MonoBehaviour
         }
     }
 
-    void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player")) // Asegúrate de que el jugador tenga el tag "Player"
+        if (other.CompareTag("Balon"))
         {
-            JugadorMovimiento jugador = other.GetComponent<JugadorMovimiento>();
-            if (jugador != null)
+            // Colisión con un balón
+            if (goalController != null)
             {
-                if (gameObject.CompareTag("YELLOWCARD"))
-                {
-                    jugador.RecibirTarjetaAmarilla();
-                }
-                else if (gameObject.CompareTag("REDCARD"))
-                {
-                    jugador.RecibirTarjetaRoja();
-                }
-                Destroy(gameObject); // Destruye la tarjeta al hacer contacto
+                bool esRoja = gameObject.CompareTag("REDCARD");
+                goalController.RegistrarImpactoTarjeta(esRoja);
             }
+
+            // Destruir tanto el balón como la tarjeta
+            Destroy(other.gameObject); // Destruir el balón
+            Destroy(gameObject);       // Destruir la tarjeta
+        }
+        else if (other.CompareTag("Player"))
+        {
+            // Colisión con la jugadora
+            if (goalController != null)
+            {
+                bool esRoja = gameObject.CompareTag("REDCARD");
+                goalController.RegistrarImpactoTarjeta(esRoja);
+            }
+
+            // Destruir la tarjeta al tocar a la jugadora
+            Destroy(gameObject);
         }
     }
 }
