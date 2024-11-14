@@ -3,23 +3,15 @@ using UnityEngine;
 
 public class ObstaculosController : MonoBehaviour
 {
-    public GameObject prefabObstaculo; // Prefab del obstáculo
-    public float intervaloSpawn = 2f;  // Intervalo entre generación de obstáculos
+    public GameObject prefabObstaculo;      // Prefab del obstáculo
+    public GameObject prefabMoneda;         // Prefab de la moneda
+    public float intervaloSpawnObstaculos = 2f;  // Intervalo entre generación de obstáculos
+    public float intervaloSpawnMoneda = 30f;     // Intervalo para generar una moneda
 
-    private GoalController goalController; // Referencia al GoalController
+    private bool monedaActiva = false;       // Controla si una moneda está activa
 
     void Start()
     {
-        GameObject goalControllerObject = GameObject.FindWithTag("GoalController");
-        if (goalControllerObject != null)
-        {
-            goalController = goalControllerObject.GetComponent<GoalController>();
-        }
-        else
-        {
-            Debug.LogWarning("GoalController no encontrado en la escena.");
-        }
-
         if (prefabObstaculo != null)
         {
             StartCoroutine(GenerarObstaculos());
@@ -28,31 +20,56 @@ public class ObstaculosController : MonoBehaviour
         {
             Debug.LogWarning("Prefab del obstáculo no asignado en ObstaculosController.");
         }
+
+        if (prefabMoneda != null)
+        {
+            StartCoroutine(GenerarMoneda());
+        }
+        else
+        {
+            Debug.LogWarning("Prefab de la moneda no asignado en ObstaculosController.");
+        }
     }
 
     IEnumerator GenerarObstaculos()
     {
         while (true)
         {
-            // Verificar si el juego ha terminado para detener la generación de obstáculos
-            if (goalController != null && goalController.juegoTerminado)
-            {
-                yield break; // Detener la generación de obstáculos si el juego ha terminado
-            }
-
-            // Verifica que el prefab esté asignado antes de instanciar
             if (prefabObstaculo != null)
             {
-                // Genera el obstáculo en una posición aleatoria en X y fija en Z
-                Instantiate(prefabObstaculo, new Vector3(Random.Range(-18f, 23f), -9.4f, 22f), Quaternion.identity);
-            }
-            else
-            {
-                Debug.LogWarning("Prefab del obstáculo es nulo.");
-                break;
-            }
+                Vector3 posicionObstaculo = new Vector3(
+                    Random.Range(-18f, 23f), 
+                    -9.4f, 
+                    Random.Range(-20f, 20f)
+                );
 
-            yield return new WaitForSeconds(intervaloSpawn);
+                Instantiate(prefabObstaculo, posicionObstaculo, Quaternion.identity);
+            }
+            yield return new WaitForSeconds(intervaloSpawnObstaculos);
+        }
+    }
+
+    IEnumerator GenerarMoneda()
+    {
+        while (true)
+        {
+            // Espera el intervalo establecido para la moneda
+            yield return new WaitForSeconds(intervaloSpawnMoneda);
+
+            if (prefabMoneda != null && !monedaActiva)
+            {
+                Vector3 posicionMoneda = new Vector3(
+                    Random.Range(-18f, 23f), 
+                    -12.95f, 
+                    Random.Range(-20f, 20f)
+                );
+
+                GameObject nuevaMoneda = Instantiate(prefabMoneda, posicionMoneda, Quaternion.identity);
+                monedaActiva = true;
+
+                // Desactiva monedaActiva al destruir la moneda
+                nuevaMoneda.GetComponent<MonedaController>().OnMonedaRecogida += () => monedaActiva = false;
+            }
         }
     }
 }
