@@ -13,21 +13,22 @@ public class GoalController : MonoBehaviour
 
     public float rangoDeSpawnY = 5f; 
     public float tamanoFinal = 0.3f;
-    public float anchoTarjeta = 0.3f; // Tamaño para el ancho de la tarjeta (eje X)
-    public float largoTarjeta = 0.3f; // Tamaño para la profundidad de la tarjeta (eje Z)
-    public float posicionFijaZ = 22f; // Posición fija en Z
+    public float anchoTarjeta = 0.3f; 
+    public float largoTarjeta = 0.3f; 
+    public float posicionFijaZ = 22f; 
 
     private Camera camara;
     private int tarjetasRojasEnEscena = 0;
     private int tarjetasAmarillasEnEscena = 0;
-    private int tarjetasAmarillasRecibidas = 0; // Contador de tarjetas amarillas recibidas
-    private int tarjetasRojasRecibidas = 0; // Contador de tarjetas rojas recibidas
-    public bool juegoTerminado = false; // Variable para detener el ciclo
+    private int tarjetasAmarillasRecibidas = 0; 
+    private int tarjetasRojasRecibidas = 0; 
+    public bool juegoTerminado = false; 
 
-    private float minX = -18f; // Poste izquierdo 
-    private float maxX = 23f; // Poste derecho 
+    private int golesMarcados = 0; // Contador de goles
 
-    // Lista para almacenar las tarjetas activas
+    private float minX = -18f;
+    private float maxX = 23f;
+
     private List<TarjetaMovimiento> tarjetasEnEscena = new List<TarjetaMovimiento>();
 
     void Start()
@@ -40,21 +41,28 @@ public class GoalController : MonoBehaviour
     {
         if (!juegoTerminado)
         {
-            // Monitorear la tecla Espacio para ajustar la velocidad de las tarjetas
             if (Input.GetKey(KeyCode.Space))
             {
-                CambiarVelocidadTarjetas(0.5f); // Reduce la velocidad al 50%
+                CambiarVelocidadTarjetas(0.5f);
             }
             else
             {
-                CambiarVelocidadTarjetas(1.0f); // Restaura la velocidad normal
+                CambiarVelocidadTarjetas(1.0f);
             }
+        }
+    }
+
+    public void RegistrarGol()
+    {
+        if (!juegoTerminado)
+        {
+            golesMarcados++; 
         }
     }
 
     IEnumerator CicloDeTarjetas()
     {
-        while (!juegoTerminado) // Ciclo solo continúa si el juego no ha terminado
+        while (!juegoTerminado)
         {
             float duracionFase1 = 10f;
             float tiempoInicio = Time.time;
@@ -102,17 +110,17 @@ public class GoalController : MonoBehaviour
     void CrearTarjeta(GameObject tarjetaPrefab, float velocidad)
     {
         Vector3 posicionAleatoria = new Vector3(
-            Random.Range(minX, maxX),  // Rango entre los postes en el eje X
-            -9.40f,                    // Fijar la posición Y en -9.40
-            posicionFijaZ);            // Usar la variable para la posición fija en Z
+            Random.Range(minX, maxX),  
+            -9.40f,                    
+            posicionFijaZ);            
 
         GameObject tarjeta = Instantiate(tarjetaPrefab, posicionAleatoria, transform.rotation);
-        tarjeta.transform.localScale = new Vector3(anchoTarjeta, tamanoFinal, largoTarjeta); // Asigna el tamaño en X, Y, Z
+        tarjeta.transform.localScale = new Vector3(anchoTarjeta, tamanoFinal, largoTarjeta); 
 
         TarjetaMovimiento movimiento = tarjeta.AddComponent<TarjetaMovimiento>();
         movimiento.velocidad = velocidad;
-        movimiento.AsignarGoalController(this); // Asignar referencia de GoalController
-        tarjetasEnEscena.Add(movimiento); // Agregar tarjeta a la lista de tarjetas activas
+        movimiento.AsignarGoalController(this);
+        tarjetasEnEscena.Add(movimiento);
 
         if (tarjetaPrefab == YELLOWCARD)
         {
@@ -128,7 +136,7 @@ public class GoalController : MonoBehaviour
     {
         foreach (TarjetaMovimiento tarjeta in tarjetasEnEscena)
         {
-            if (tarjeta != null) // Asegurarse de que la tarjeta siga existiendo
+            if (tarjeta != null)
             {
                 tarjeta.VelocidadActualizada(factor);
             }
@@ -162,16 +170,14 @@ public class GoalController : MonoBehaviour
         {
             tarjetasAmarillasEnEscena--;
         }
-        tarjetasEnEscena.Remove(tarjeta); // Eliminar la tarjeta de la lista al destruirse
+        tarjetasEnEscena.Remove(tarjeta);
     }
 
     void TerminarJuego(string mensaje)
     {
         juegoTerminado = true;
-
         Debug.Log(mensaje);
 
-        // Llama al método de `JugadorMovimiento` para manejar la música y el mensaje de "GAME OVER"
         GameObject jugador = GameObject.FindWithTag("Player");
         if (jugador != null)
         {
@@ -188,7 +194,6 @@ public class GoalController : MonoBehaviour
         Color colorOriginal = GUI.color;
         GUI.color = Color.black;
 
-        // Mostrar la cantidad de tarjetas en juego
         GUI.Box(new Rect(10, 10, 250, 50), "");
         GUI.color = colorOriginal;
 
@@ -203,12 +208,15 @@ public class GoalController : MonoBehaviour
         GUI.Label(new Rect(15, 15, 220, 20), "Tarjetas Amarillas en juego: " + tarjetasAmarillasEnEscena, estiloTextoAmarillo);
         GUI.Label(new Rect(15, 35, 220, 20), "Tarjetas Rojas en juego: " + tarjetasRojasEnEscena, estiloTextoRojo);
 
-        // Mostrar el conteo de tarjetas recibidas en la esquina inferior derecha
-        GUI.Box(new Rect(Screen.width - 200, Screen.height - 70, 190, 60), ""); // Fondo negro con tamaño aumentado
-
-        // Ajustar las posiciones de los textos dentro de la caja
+        GUI.Box(new Rect(Screen.width - 200, Screen.height - 70, 190, 60), "");
         GUI.Label(new Rect(Screen.width - 190, Screen.height - 65, 180, 20), "Tarjetas Amarillas: " + tarjetasAmarillasRecibidas, estiloTextoAmarillo);
         GUI.Label(new Rect(Screen.width - 190, Screen.height - 45, 180, 20), "Tarjetas Rojas: " + tarjetasRojasRecibidas, estiloTextoRojo);
 
+        GUIStyle estiloTextoGol = new GUIStyle();
+        estiloTextoGol.fontSize = 18;
+        estiloTextoGol.normal.textColor = Color.green;
+        estiloTextoGol.alignment = TextAnchor.UpperRight;
+
+        GUI.Label(new Rect(Screen.width - 160, 10, 150, 30), "Goles: " + golesMarcados, estiloTextoGol);
     }
 }
