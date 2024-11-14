@@ -673,7 +673,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13b830aa79aa1408c96a8b3a85586a3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sonidoColision: {fileID: 8300000, guid: 36eb5fe7fc0e24c61982493d2a41d528, type: 3}
 --- !u!135 &1600749100
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -840,7 +839,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefabObstaculo: {fileID: 7924936375749289584, guid: 27161fec74a1442498555377c2e9d809, type: 3}
-  intervaloSpawn: 2
+  prefabMoneda: {fileID: 374317058333056601, guid: afd1be72cc4714063b5c2ffaa66c20ad, type: 3}
+  intervaloSpawnObstaculos: 2
+  intervaloSpawnMoneda: 30
 --- !u!4 &1854928309
 Transform:
   m_ObjectHideFlags: 0
