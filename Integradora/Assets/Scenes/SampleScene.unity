@@ -713,6 +713,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   YELLOWCARD: {fileID: 8560236269362730802}
   REDCARD: {fileID: 3647557512540810312}
+  BalonRival: {fileID: 649857403099147282, guid: 2c669b80152f240d095e34f988391cab, type: 3}
   intervalo: 1
   tarjetasRojasPorFase: 5
   tarjetasAmarillasPorFase2: 3

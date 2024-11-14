@@ -6,6 +6,7 @@ public class GoalController : MonoBehaviour
 {
     public GameObject YELLOWCARD;
     public GameObject REDCARD;
+    public GameObject BalonRival; 
 
     public float intervalo = 1f;
     public int tarjetasRojasPorFase = 2;
@@ -39,6 +40,7 @@ public class GoalController : MonoBehaviour
     {
         camara = Camera.main;
         StartCoroutine(CicloDeTarjetas());
+        Invoke("IniciarLanzamientoBalones", 30f); // Iniciar lanzamiento de balones después de 30 segundos
     }
 
     void Update()
@@ -55,6 +57,44 @@ public class GoalController : MonoBehaviour
             }
         }
     }
+
+    void IniciarLanzamientoBalones()
+    {
+        if (!juegoTerminado)
+        {
+            StartCoroutine(CicloDeBalones());
+        }
+    }
+
+    IEnumerator CicloDeBalones()
+    {
+        while (!juegoTerminado)
+        {
+            for (int i = 0; i < 3; i++) // Lanzar 3 balones
+            {
+                CrearBalonRival();
+                yield return new WaitForSeconds(1f); // Intervalo de 1 segundo entre cada balón
+            }
+            yield return new WaitForSeconds(10f); // Espera 10 segundos para el siguiente ciclo de 3 balones
+        }
+    }
+
+    void CrearBalonRival()
+    {
+        if (BalonRival != null)
+        {
+            Vector3 posicionBalon = new Vector3(Random.Range(minX, maxX), -9.4f, 22f);
+            GameObject nuevoBalonRival = Instantiate(BalonRival, posicionBalon, Quaternion.identity);
+            
+            // Asigna el GoalController al BalonRival
+            BalonRivalMovimiento balonRivalMovimiento = nuevoBalonRival.GetComponent<BalonRivalMovimiento>();
+            if (balonRivalMovimiento != null)
+            {
+                balonRivalMovimiento.AsignarGoalController(this);
+            }
+        }
+    }
+
 
     IEnumerator CicloDeTarjetas()
     {
@@ -173,16 +213,18 @@ public class GoalController : MonoBehaviour
     }
 
     public void RegistrarColisionConObstaculo()
+{
+    if (!juegoTerminado && !esVictoria)
     {
-        if (!juegoTerminado && !esVictoria)
+        obstaculosGolpeados++;
+        Debug.Log("Obstáculos golpeados: " + obstaculosGolpeados); // Mensaje para verificar
+        if (obstaculosGolpeados >= limiteObstaculosGolpeados)
         {
-            obstaculosGolpeados++;
-            if (obstaculosGolpeados >= limiteObstaculosGolpeados)
-            {
-                TerminarJuego("Has golpeado demasiados obstáculos. ¡Juego terminado!");
-            }
+            TerminarJuego("Has golpeado demasiados obstáculos. ¡Juego terminado!");
         }
     }
+}
+
 
     public void RegistrarDestruccionTarjeta(bool esRoja, TarjetaMovimiento tarjeta)
     {
@@ -198,38 +240,36 @@ public class GoalController : MonoBehaviour
     }
 
     void TerminarJuego(string mensaje)
-{
-    juegoTerminado = true;
-    Debug.Log(mensaje);
-
-    GameObject jugador = GameObject.FindWithTag("Player");
-    if (jugador != null)
     {
-        JugadorMovimiento jugadorMovimiento = jugador.GetComponent<JugadorMovimiento>();
-        if (jugadorMovimiento != null)
+        juegoTerminado = true;
+        Debug.Log(mensaje);
+
+        GameObject jugador = GameObject.FindWithTag("Player");
+        if (jugador != null)
         {
-            jugadorMovimiento.TerminarJuego(esVictoria);
+            JugadorMovimiento jugadorMovimiento = jugador.GetComponent<JugadorMovimiento>();
+            if (jugadorMovimiento != null)
+            {
+                jugadorMovimiento.TerminarJuego(esVictoria);
+            }
+        }
+
+        GameObject obstaculosControllerObject = GameObject.FindWithTag("ObstaculosController");
+        if (obstaculosControllerObject != null)
+        {
+            ObstaculosController obstaculosController = obstaculosControllerObject.GetComponent<ObstaculosController>();
+            if (obstaculosController != null)
+            {
+                obstaculosController.TerminarJuego();
+            }
         }
     }
-
-    // Llamada para detener la generación de obstáculos y monedas
-    GameObject obstaculosControllerObject = GameObject.FindWithTag("ObstaculosController");
-    if (obstaculosControllerObject != null)
-    {
-        ObstaculosController obstaculosController = obstaculosControllerObject.GetComponent<ObstaculosController>();
-        if (obstaculosController != null)
-        {
-            obstaculosController.TerminarJuego();
-        }
-    }
-}
 
     public void ResetearContadoresDeTarjetas()
     {
         tarjetasAmarillasRecibidas = 0;
         tarjetasRojasRecibidas = 0;
     }
-
 
     void OnGUI()
     {

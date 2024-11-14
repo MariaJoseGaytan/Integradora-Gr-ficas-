@@ -10,6 +10,7 @@ TagManager:
   - Balon
   - Obstaculo
   - ObstaculosController
+  - BalonRival
   layers:
   - Default
   - TransparentFX
