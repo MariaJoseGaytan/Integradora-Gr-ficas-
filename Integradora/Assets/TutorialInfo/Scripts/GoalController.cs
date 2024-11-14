@@ -12,16 +12,21 @@ public class GoalController : MonoBehaviour
     public int tarjetasAmarillasPorFase2 = 3;
 
     public float rangoDeSpawnY = 5f; 
-    public float tamanoFinal = 0.05f;
+    public float tamanoFinal = 0.3f;
+    public float anchoTarjeta = 0.3f; // Tamaño para el ancho de la tarjeta (eje X)
+    public float largoTarjeta = 0.3f; // Tamaño para la profundidad de la tarjeta (eje Z)
+    public float posicionFijaZ = 22f; // Posición fija en Z
 
     private Camera camara;
     private int tarjetasRojasEnEscena = 0;
     private int tarjetasAmarillasEnEscena = 0;
+    public bool juegoTerminado = false; // Variable para detener el ciclo
 
-    public bool juegoTerminado = false; // Nueva variable para detener el ciclo
     private float minX = -18f; // Poste izquierdo 
     private float maxX = 23f; // Poste derecho 
-    private List<TarjetaMovimiento> tarjetasEnEscena = new List<TarjetaMovimiento>(); // Lista de tarjetas activas
+
+    // Lista para almacenar las tarjetas activas
+    private List<TarjetaMovimiento> tarjetasEnEscena = new List<TarjetaMovimiento>(); 
 
     void Start()
     {
@@ -94,15 +99,15 @@ public class GoalController : MonoBehaviour
         Vector3 posicionAleatoria = new Vector3(
             Random.Range(minX, maxX),  // Rango entre los postes en el eje X
             -9.40f,                    // Fijar la posición Y en -9.40
-            22f);                      // Posición fija en Z
+            posicionFijaZ);            // Usar la variable para la posición fija en Z
 
         GameObject tarjeta = Instantiate(tarjetaPrefab, posicionAleatoria, transform.rotation);
-        tarjeta.transform.localScale = new Vector3(tamanoFinal, tamanoFinal, tamanoFinal);
+        tarjeta.transform.localScale = new Vector3(anchoTarjeta, tamanoFinal, largoTarjeta); // Asigna el tamaño en X, Y, Z
 
         TarjetaMovimiento movimiento = tarjeta.AddComponent<TarjetaMovimiento>();
         movimiento.velocidad = velocidad;
         movimiento.AsignarGoalController(this); // Asignar referencia de GoalController
-        tarjetasEnEscena.Add(movimiento); // Agregar tarjeta a la lista
+        tarjetasEnEscena.Add(movimiento); // Agregar tarjeta a la lista de tarjetas activas
 
         if (tarjetaPrefab == YELLOWCARD)
         {
@@ -118,7 +123,7 @@ public class GoalController : MonoBehaviour
     {
         foreach (TarjetaMovimiento tarjeta in tarjetasEnEscena)
         {
-            if (tarjeta != null) // Verifica que la tarjeta siga existiendo
+            if (tarjeta != null) // Asegurarse de que la tarjeta siga existiendo
             {
                 tarjeta.VelocidadActualizada(factor);
             }
@@ -135,7 +140,7 @@ public class GoalController : MonoBehaviour
         {
             tarjetasAmarillasEnEscena--;
         }
-        tarjetasEnEscena.Remove(tarjeta); // Remover la tarjeta de la lista al destruirse
+        tarjetasEnEscena.Remove(tarjeta); // Eliminar la tarjeta de la lista al destruirse
     }
 
     void OnGUI()

@@ -478,6 +478,8 @@ MonoBehaviour:
   limiteDerecho: 11
   prefabBalon: {fileID: 1600749095}
   fuerzaLanzamiento: 15
+  sonidoPerdida: {fileID: 8300000, guid: 36eb5fe7fc0e24c61982493d2a41d528, type: 3}
+  audioFondo: {fileID: 2140879241}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -559,6 +561,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1600749098
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1600749095}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13b830aa79aa1408c96a8b3a85586a3e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1707150355 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1291161702805429687, guid: 8281968fd16424c65bb3e4d3af6bbb42, type: 3}
@@ -582,7 +596,11 @@ MonoBehaviour:
   tarjetasRojasPorFase: 5
   tarjetasAmarillasPorFase2: 3
   rangoDeSpawnY: 5
-  tamanoFinal: 0.5
+  tamanoFinal: 0.3
+  anchoTarjeta: 0.3
+  largoTarjeta: 0.3
+  posicionFijaZ: 22
+  juegoTerminado: 0
 --- !u!1 &1775683201
 GameObject:
   m_ObjectHideFlags: 0
@@ -876,6 +894,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: goal
       objectReference: {fileID: 0}
+    - target: {fileID: 1291161702805429687, guid: 8281968fd16424c65bb3e4d3af6bbb42, type: 3}
+      propertyPath: m_TagString
+      value: GoalController
+      objectReference: {fileID: 0}
     - target: {fileID: 1918797421928646413, guid: 8281968fd16424c65bb3e4d3af6bbb42, type: 3}
       propertyPath: m_LocalScale.y
       value: 4.5
@@ -996,6 +1018,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7649008704173033517, guid: 3e09dd7beea034544b70bcbadce90f16, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1600749097}
+    - targetCorrespondingSourceObject: {fileID: 7649008704173033517, guid: 3e09dd7beea034544b70bcbadce90f16, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1600749098}
   m_SourcePrefab: {fileID: 100100000, guid: 3e09dd7beea034544b70bcbadce90f16, type: 3}
 --- !u!1001 &7753718385601757182
 PrefabInstance:
