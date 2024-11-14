@@ -301,7 +301,7 @@ public class GoalController : MonoBehaviour
         GUI.Label(new Rect(Screen.width - 190, Screen.height - 25, 180, 20), "Obstáculos golpeados: " + obstaculosGolpeados, estiloTextoBlanco);
 
         GUI.Box(new Rect(Screen.width - 200, 10, 190, 40), "");
-        GUI.Label(new Rect(Screen.width - 190, 15, 180, 20), "Goles: " + goles, estiloTextoAmarillo);
+        GUI.Label(new Rect(Screen.width - 190, 15, 180, 20), "Goles: " + goles, estiloTextoBlanco);
 
         if (juegoTerminado)
         {

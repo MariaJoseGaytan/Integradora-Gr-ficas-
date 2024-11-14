@@ -2,12 +2,12 @@ using UnityEngine;
 
 public class ObstaculoMovimiento : MonoBehaviour
 {
-    public float velocidadX = 2f; // Velocidad de movimiento en el eje X
-    private float limiteIzquierdo = -18f; // Límite izquierdo para destruir el obstáculo
-    private float limiteDerecho = 23f; // Límite derecho para destruir el obstáculo
+    public float velocidadX = 2f; 
+    private float limiteIzquierdo = -18f; 
+    private float limiteDerecho = 23f; 
 
-    private float posicionFijaZ; // Posición fija en Z
-    private float posicionFijaY = -9.4f; // Posición fija en Y
+    private float posicionFijaZ; 
+    private float posicionFijaY = -9.4f; 
 
     private GoalController goalController;
 

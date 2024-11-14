@@ -7,11 +7,10 @@ public class MonedaController : MonoBehaviour
 
     public float velocidad = 8f;
     private float limiteDerecho = 23f;
-    private GoalController goalController; // Almacenamiento de GoalController
+    private GoalController goalController; 
 
     void Start()
     {
-        // Busca el GoalController usando el Tag "GoalController"
         GameObject goalControllerObject = GameObject.FindWithTag("GoalController");
         if (goalControllerObject != null)
         {

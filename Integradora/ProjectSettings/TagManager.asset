@@ -11,6 +11,7 @@ TagManager:
   - Obstaculo
   - ObstaculosController
   - BalonRival
+  - Moneda
   layers:
   - Default
   - TransparentFX

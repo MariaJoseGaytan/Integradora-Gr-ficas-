@@ -3,15 +3,15 @@ using UnityEngine;
 
 public class ObstaculosController : MonoBehaviour
 {
-    public GameObject prefabObstaculo;      // Prefab del obstáculo
-    public GameObject prefabMoneda;         // Prefab de la moneda
-    public float intervaloSpawnObstaculos = 2f;  // Intervalo entre generación de obstáculos
-    public float intervaloSpawnMoneda = 30f;     // Intervalo para generar una moneda
+    public GameObject prefabObstaculo;     
+    public GameObject prefabMoneda;        
+    public float intervaloSpawnObstaculos = 2f;  
+    public float intervaloSpawnMoneda = 30f;    
 
-    private bool monedaActiva = false;       // Controla si una moneda está activa
-    private bool juegoTerminado = false;     // Controla si el juego ha terminado
+    private bool monedaActiva = false;       
+    private bool juegoTerminado = false;     
 
-    void Start()
+    private void Start()
     {
         if (prefabObstaculo != null)
         {
@@ -34,12 +34,26 @@ public class ObstaculosController : MonoBehaviour
 
     public void TerminarJuego()
     {
-        juegoTerminado = true; // Detiene la generación de obstáculos y monedas
+        juegoTerminado = true; 
+        StopAllCoroutines(); 
+
+        foreach (GameObject obstaculo in GameObject.FindGameObjectsWithTag("Obstaculo"))
+        {
+            Destroy(obstaculo);
+        }
+
+        GameObject moneda = GameObject.FindWithTag("Moneda");
+        if (moneda != null)
+        {
+            Destroy(moneda);
+        }
+
+        monedaActiva = false; 
     }
 
     IEnumerator GenerarObstaculos()
     {
-        while (!juegoTerminado) // Solo genera obstáculos si el juego no ha terminado
+        while (!juegoTerminado) 
         {
             if (prefabObstaculo != null)
             {
@@ -49,7 +63,8 @@ public class ObstaculosController : MonoBehaviour
                     Random.Range(-20f, 20f)
                 );
 
-                Instantiate(prefabObstaculo, posicionObstaculo, Quaternion.identity);
+                GameObject obstaculo = Instantiate(prefabObstaculo, posicionObstaculo, Quaternion.identity);
+                obstaculo.tag = "Obstaculo"; 
             }
             yield return new WaitForSeconds(intervaloSpawnObstaculos);
         }
@@ -57,11 +72,11 @@ public class ObstaculosController : MonoBehaviour
 
     IEnumerator GenerarMoneda()
     {
-        while (!juegoTerminado) // Solo genera monedas si el juego no ha terminado
+        while (!juegoTerminado) 
         {
             yield return new WaitForSeconds(intervaloSpawnMoneda);
 
-            if (prefabMoneda != null && !monedaActiva)
+            if (prefabMoneda != null && !monedaActiva && !juegoTerminado)
             {
                 Vector3 posicionMoneda = new Vector3(
                     Random.Range(-18f, 23f), 
@@ -70,16 +85,15 @@ public class ObstaculosController : MonoBehaviour
                 );
 
                 GameObject nuevaMoneda = Instantiate(prefabMoneda, posicionMoneda, Quaternion.identity);
+                nuevaMoneda.tag = "Moneda"; 
                 monedaActiva = true;
 
-                // Desactiva monedaActiva cuando la moneda se recoja
                 MonedaController monedaController = nuevaMoneda.GetComponent<MonedaController>();
                 if (monedaController != null)
                 {
                     monedaController.OnMonedaRecogida += () => monedaActiva = false;
                 }
 
-                // Desactiva monedaActiva automáticamente después de 30 segundos, si la moneda sigue activa
                 StartCoroutine(ResetMonedaActiva(30f, nuevaMoneda));
             }
         }
@@ -89,11 +103,11 @@ public class ObstaculosController : MonoBehaviour
     {
         yield return new WaitForSeconds(tiempoEspera);
         
-        if (moneda != null) // Si la moneda aún existe
+        if (!juegoTerminado && moneda != null) 
         {
-            Destroy(moneda); // Destruye la moneda si no ha sido recogida
+            Destroy(moneda); 
         }
 
-        monedaActiva = false; // Permite que otra moneda sea generada
+        monedaActiva = false; 
     }
 }
